@@ -14,5 +14,5 @@ document.getElementById("fillData").addEventListener("click", async() => {
             },
             args: [autofillData]
         });
-    })
+    });
 })
