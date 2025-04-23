@@ -13,13 +13,14 @@
         "128": "icon.png"
       }
     },
+    "options_page": "data.html",
     "background": {
       "service_worker": "background.js"
     },
     "content_scripts": [
       {
         "matches": ["<all_urls>"],
-        "js": ["content.js"]
+        "js": ["data.js"]
       }
     ]
 }
