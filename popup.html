@@ -1,13 +1,64 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <style>
-            body { font-family: sans-serif; padding: 10px; }
-            a { color: blue; }
-        </style>
-    </head>
-    <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Save and Fill</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 1.5rem;
+            width: 320px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+        }
+
+        h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin: 0 0 1.5rem 0;
+        }
+
+        a.button {
+            display: block;
+            padding: 0.75rem;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        a.button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="icon.png" alt="Save and Fill Icon" class="icon">
         <h3>Save and Fill</h3>
-        <p><a href="data.html" target="_blank">Open Data Manager</a></p>
-    </body>
+        <p>Save reusable text and fill it anywhere with a simple right-click.</p>
+        <a href="data.html" target="_blank" class="button">Manage Your Data</a>
+    </div>
+</body>
 </html>

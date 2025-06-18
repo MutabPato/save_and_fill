@@ -1,68 +1,95 @@
  document.addEventListener('DOMContentLoaded', () => {
-    // Reference to the entries container
-    const entriesContainer = document.getElementById('entries');
+    
+    //Select form and buttons
+    const form = document.getElementById('dataForm');
     const addEntryBtn = document.getElementById('add-entry');
-    const saveBtn = document.getElementById('save');
 
     // Create a single entry block
-    function createEntry(label = '', value = '') {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'entry';
+    function createEntryRow(label = '', value = '') {
+        const row = document.createElement('div');
+        row.className = 'entry-row';
 
         const labelInput = document.createElement('input');
-        labelInput.placeholder = 'Label (e.g. Email)';
+        labelInput.type = 'text';
+        labelInput.placeholder = 'Label';
+        labelInput.className = 'label-input';
         labelInput.value = label;
 
         const valueInput = document.createElement('input');
-        valueInput.placeholder = 'Value (e.g. me@email.com)'
+        valueInput.type = 'text';
+        valueInput.placeholder = 'Value';
+        valueInput.className = 'value-input';
         valueInput.value = value;
 
         const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'Remove';
-        removeBtn.onClick = () => wrapper.remove;
+        removeBtn.innerHTML = '&times;';
+        removeBtn.className = 'remove-btn';
+        removeBtn.addEventListener('click', () => {
+            console.log('Remove button clicked');
+            row.remove();
+        });
 
-        wrapper.appendChild(labelInput);
-        wrapper.appendChild(valueInput);
-        wrapper.appendChild(removeBtn);
-        entriesContainer.appendChild(wrapper);
+        row.appendChild(labelInput);
+        row.appendChild(valueInput);
+        row.appendChild(removeBtn);
+        
+        form.insertBefore(row, form.querySelector('.buttons'));
     }
 
     // Add new entry on button click
-    addEntryBtn.addEventListener('click', () => { createEntry();
+    addEntryBtn.addEventListener('click', () => { 
+        createEntryRow();
         console.log("Entry created");
     });
 
-    // Save all entries to Chrome storage
-    saveBtn.addEventListener('click', async () => {
-        const allEntries = entriesContainer.querySelectorAll('.entry');
-        console.log("All entries:", allEntries);
+    // Handle for submission and save data
+    form.addEventListener('submit', async (e) =>{
+        e.preventDefault();
+
+        const labels = document.querySelectorAll('.label-input');
+        const values = document.querySelectorAll('.value-input');
         const dataToSave = {};
 
-        allEntries.forEach(entry => {
-            console.log("Current entry:", entry);
-            const inputs = entry.querySelectorAll('input');
-            console.log("Inputs witjin entry:", inputs);
+        let hasEmpty = false;
 
-            const label = inputs[0].value.trim();
-            console.log("label:", label);
-            const value = inputs[1].value.trim();
-            console.log("value:", value);
+        labels.forEach((labelInput, index) => {
+            const label = labelInput.value.trim();
+            const value = values[index].value.trim(); 
+
             if(label && value) {
                 dataToSave[label] = value;
-            } 
+            } else {
+                hasEmpty = false;
+            }
         });
 
-        await chrome.storage.sync.set({ savedEntries: dataToSave });
-        alert('Data saved!');
-        chrome.runtime.sendMessage({ action: "updateContextMenu" }); // Notify background to update context menu   
+        if (Object.keys(dataToSave).length === 0) {
+            alert("Please fill at least one complete entry");
+            return;
+        }
+
+        if (hasEmpty) {
+            if(!confirm("Some entries are incomplete. Do you want to save only")){
+                return;
+            }
+        }
+        await chrome.storage.sync.set({ autofillData: dataToSave });
+        alert("Data saved successfully!");
+        chrome.runtime.sendMessage({ action: 'updateContextMenu' }); // Notify background to update contextMenus
     });
 
     // Load saved data when the page opens
     (async () => {
-        const result = await chrome.storage.sync.get('savedEntries');
-        const savedEntries = result.savedEntries || {};
-        for (const [label, value] of Object.entries(savedEntries)) {
-            createEntry(label, value);
+        const result = await chrome.storage.sync.get('autofillData');
+        const savedData = result.autofillData || {};
+        
+       if (Object.keys(savedData).length > 0) {
+        for (const [label, value] of Object.entries(savedData)) {
+            createEntryRow(label, value);
         }
+       } else {
+        // Add one blank row if no saved data exists
+        createEntryRow();
+       }
     })();
 });

@@ -16,11 +16,11 @@ async function createContextMenu() {
     });
 
     // Load saved entries from storage
-    chrome.storage.sync.get("savedEntries", (result) => {
-        const entries = result.savedEntries || {};
+    chrome.storage.sync.get("autofillData", (result) => {
+        const data = result.autofillData || {};
 
         // Create submenus for each entry
-        Object.keys(entries).forEach((label) => {
+        Object.keys(data).forEach ((label) => {
             chrome.contextMenus.create({
                 id: `fillData_${label}`,
                 parentId: "fillData",
@@ -36,8 +36,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (info.menuItemId.startsWith("fillData_")) {
         const label = info.menuItemId.replace("fillData_", "");
 
-        chrome.storage.sync.get("savedEntries", (result) => {
-            const value = result.savedEntries?.[label];
+        chrome.storage.sync.get("autofillData", (result) => {
+            const value = result.autofillData?.[label];
 
             if(value) {
                 // Inject code to fill active input field
